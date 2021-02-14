@@ -1,0 +1,9 @@
+<h1>Things</h1>
+
+<%= link_to 'New thing', new_thing_path %>
+
+<ul>
+  <% @things.each do |thing| %>
+    <li><%= thing.name %></li>
+  <% end %>
+</ul>

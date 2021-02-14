@@ -1,0 +1,33 @@
+<% pool = ENV.fetch("PUMA_THREADS", 5) %>
+<% follower_color = ENV["DATABASE_FOLLOWER_COLOR"].to_s.upcase %>
+<% follower_url = ENV["HEROKU_POSTGRESQL_#{follower_color}_URL"] %>
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= pool %>
+
+development:
+  primary:
+    <<: *default
+    database: multi_db_development
+  follower:
+    <<: *default
+    database: multi_db_development
+    replica: true
+
+test:
+  <<: *default
+  database: multi_db_test
+
+production:
+  <% if follower_url.present? %>
+  primary:
+    <<: *default
+  follower:
+    <<: *default
+    replica: true
+    url: <%= follower_url %>
+  <% else %>
+  <<: *default
+  <% end %>
